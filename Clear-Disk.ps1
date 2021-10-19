@@ -98,6 +98,16 @@ Write-host "Starting CleanMgr.exe.." -foreground yellow
 #Write-host "Clearing All Event Logs" -foreground yellow
 #    wevtutil el | Foreach-Object {Write-Host "Clearing $_"; wevtutil cl "$_"}
 
+Write-Host "Remove Vagrant boxes."
+Remove-Item -Force -Recurse "$env:USERPROFILE\.vagrant.d\boxes"
+
+Write-Host "Compact Windows 10 dev environment."
+Optimize-VHD -Path "${env:PUBLIC}\Documents\Hyper-V\Virtual hard disks\Windows 10 dev environment.vhdx" -Mode Full
+
+Write-Host "Compact Docker Desktop WSL filesystem."
+wsl --shutdown
+Optimize-VHD -Path "$env:LOCALAPPDATA\Docker\wsl\data\ext4.vhdx" -Mode Full
+
 Write-host "Disk Usage before and after cleanup" -foreground yellow
     $FreespaceAfter = (Get-WmiObject win32_logicaldisk -filter "DeviceID='C:'" | select Freespace).FreeSpace/1GB
     "Free Space Before: {0}" -f $FreespaceBefore
