@@ -1,45 +1,17 @@
+# Based on script from: https://community.spiceworks.com/scripts/show/3937-full-windows-system-cleanup-script
+#
 # Written by Fabian Castagna
 # Used as a complete windows cleanup tool
 # 15-7-2016
-function Delete-ComputerRestorePoints{
-	[CmdletBinding(SupportsShouldProcess=$True)]param(  
-	    [Parameter(
-	        Position=0, 
-	        Mandatory=$true, 
-	        ValueFromPipeline=$true
-		)]
-	    $restorePoints
-	)
-	begin{
-		$fullName="SystemRestore.DeleteRestorePoint"
-		#check if the type is already loaded
-		$isLoaded=([AppDomain]::CurrentDomain.GetAssemblies() | foreach {$_.GetTypes()} | where {$_.FullName -eq $fullName}) -ne $null
-		if (!$isLoaded){
-			$SRClient= Add-Type   -memberDefinition  @"
-		    	[DllImport ("Srclient.dll")]
-		        public static extern int SRRemoveRestorePoint (int index);
-"@  -Name DeleteRestorePoint -NameSpace SystemRestore -PassThru
-		}
-	}
-	process{
-		foreach ($restorePoint in $restorePoints){
-			if($PSCmdlet.ShouldProcess("$($restorePoint.Description)","Deleting Restorepoint")) {
-		 		[SystemRestore.DeleteRestorePoint]::SRRemoveRestorePoint($restorePoint.SequenceNumber)
-			}
-		}
-	}
-}
 
-Write-Host "Deleting System Restore Points"
-	Get-ComputerRestorePoint | Delete-ComputerRestorePoints # -WhatIf
-
-	Write-host "Checking to make sure you have Local Admin rights" -foreground yellow
+Write-host "Checking to make sure you have Local Admin rights" -foreground yellow
     If (-NOT ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))
     {
         Write-Warning "Please run this script as an Administrator!"
-        If (!($psISE)){"Press any key to continue…";[void][System.Console]::ReadKey($true)}
         Exit 1
     }
+
+# TODO: Make sure you are running in Windows PowerShell and not PowerShell Core.
 
 Write-Host "Capture current free disk space on Drive C" -foreground yellow
     $FreespaceBefore = (Get-WmiObject win32_logicaldisk -filter "DeviceID='C:'" | select Freespace).FreeSpace/1GB
@@ -123,8 +95,8 @@ $StateRun = '/sagerun:' + $StateRun
 Write-host "Starting CleanMgr.exe.." -foreground yellow
     Start-Process -FilePath CleanMgr.exe -ArgumentList $StateRun  -WindowStyle Hidden -Wait
 
-Write-host "Clearing All Event Logs" -foreground yellow
-    wevtutil el | Foreach-Object {Write-Host "Clearing $_"; wevtutil cl "$_"}
+#Write-host "Clearing All Event Logs" -foreground yellow
+#    wevtutil el | Foreach-Object {Write-Host "Clearing $_"; wevtutil cl "$_"}
 
 Write-host "Disk Usage before and after cleanup" -foreground yellow
     $FreespaceAfter = (Get-WmiObject win32_logicaldisk -filter "DeviceID='C:'" | select Freespace).FreeSpace/1GB
