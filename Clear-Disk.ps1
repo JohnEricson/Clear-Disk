@@ -108,6 +108,9 @@ Write-Host "Compact Docker Desktop WSL filesystem."
 wsl --shutdown
 Optimize-VHD -Path "$env:LOCALAPPDATA\Docker\wsl\data\ext4.vhdx" -Mode Full
 
+Write-Host "Clear Maven cache."
+Remove-Item -Force -Recurse "$env:USERPROFILE\.m2\repository"
+
 Write-host "Disk Usage before and after cleanup" -foreground yellow
     $FreespaceAfter = (Get-WmiObject win32_logicaldisk -filter "DeviceID='C:'" | select Freespace).FreeSpace/1GB
     "Free Space Before: {0}" -f $FreespaceBefore
