@@ -112,7 +112,7 @@ Write-Host "Clear Maven cache."
 Remove-Item -Force -Recurse "$env:USERPROFILE\.m2\repository"
 
 Write-Host "Clear files in Downloads directory."
-Remove-Item -Path "$env:USERPROFILE\Downloads" -Exclude 'Downloads', 'Telegram Desktop', 'Tixati complete downloads' -Force -Recurse
+Remove-Item -Path "$env:USERPROFILE\Downloads" -Exclude 'Downloads', 'Telegram Desktop', 'Tixati complete', 'Tixati incomplete' -Force -Recurse
 
 Write-host "Disk Usage before and after cleanup" -foreground yellow
     $FreespaceAfter = (Get-WmiObject win32_logicaldisk -filter "DeviceID='C:'" | select Freespace).FreeSpace/1GB
