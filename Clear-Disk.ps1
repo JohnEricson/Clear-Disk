@@ -1,9 +1,9 @@
 # Based on script from: https://community.spiceworks.com/scripts/show/3937-full-windows-system-cleanup-script
-#
-# Written by Fabian Castagna
+# Originally written by Fabian Castagna
 # Used as a complete windows cleanup tool
 # 15-7-2016
-
+#
+# Author: John Ericson 2021 
 Write-host "Checking to make sure you have Local Admin rights" -foreground yellow
     If (-NOT ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))
     {
